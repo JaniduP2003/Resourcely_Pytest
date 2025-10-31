@@ -22,27 +22,26 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=server=mysql;port=3306;user=janidu2003;password=8989;database=resourcelydb;
+      - ConnectionStrings__Default=Server=mssql,1433;Database=resourcelydb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;Encrypt=False;
     depends_on:
-      mysql:
+      mssql:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - app-network
 
-  mysql:
-    image: mysql:8.0
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=resourcelydb
-      - MYSQL_USER=janidu2003
-      - MYSQL_PASSWORD=8989
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+      - MSSQL_PID=Express
     ports:
-      - "3307:3306"
+      - "1433:1433"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mssql_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ujanidu2003", "-p8989"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -51,7 +50,7 @@ services:
       - app-network
 
 volumes:
-  mysql_data:
+  mssql_data:
 
 networks:
   app-network:
