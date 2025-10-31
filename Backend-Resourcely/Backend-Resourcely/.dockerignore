@@ -1,0 +1,12 @@
+Dockerfile
+docker-compose.yml
+.dockerignore
+.git
+.gitignore
+.env
+**/bin/
+**/obj/
+**/.vs/
+**/node_modules/
+*.log
+*.tmp

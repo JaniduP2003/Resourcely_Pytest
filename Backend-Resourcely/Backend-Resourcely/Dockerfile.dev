@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+WORKDIR /src
+
+# Copy csproj/solution first for better restore caching if needed
+COPY *.sln ./
+COPY ./ ./
+
+# Dev uses dotnet watch via compose command
+EXPOSE 8080
+
+# Default command overridden by docker-compose
+CMD ["bash", "-lc", "dotnet --info && sleep infinity"]
+
+

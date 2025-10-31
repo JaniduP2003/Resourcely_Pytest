@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o /app/publish
+
+# Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Copy SQL scripts 
+COPY SqlScripts/ ./SqlScripts/
+
+# Expose port
+EXPOSE 8080
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Development
+
+ENTRYPOINT ["dotnet", "Backend-Resourcely.dll"]
